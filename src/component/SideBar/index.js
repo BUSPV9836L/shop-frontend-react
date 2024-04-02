@@ -17,6 +17,8 @@ const SideBar = () => {
         [`.${sidebarClasses.container}`]: {
           backgroundColor: "white",
           height: "90vh",
+          position:"fixed",
+          borderRight:"1px solid #e8e6e1)",
         },
       }}
     >

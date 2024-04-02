@@ -122,7 +122,7 @@ const ApexChart = () => {
           options={chartData.options}
           series={chartData.series}
           type="bar"
-          height={350}
+          height={"200%"}
         />
       </div>
       <div id="html-dist"></div>

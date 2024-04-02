@@ -9,11 +9,11 @@ const Layout = (props) => {
   return (
     <div>
       <Header setLogging={setLogging}/>
-      <div className=" row">
-        <div style={{width:"20%"}}>
+      <div style={{paddingTop:"60px"}} className=" row ">
+        <div style={{width:"15%"}}>
           <SideBar />
         </div>
-        <div style={{width:"80%", marginTop:"10px"}}>
+        <div style={{width:"85%", marginTop:"10px"}}>
           <Outlet/>
         </div>
       </div>

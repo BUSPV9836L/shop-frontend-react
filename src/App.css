@@ -55,3 +55,12 @@ body{
   border: 0;
   padding: 0 20px;
 }
+.ps-sidebar-container{
+  width: 15%;
+}
+#daniel{
+  border-color: rgba(111,111,111,0.2) transparent transparent;
+  border-style: solid;
+  border-width: 15px;
+  position: absolute;
+ }

@@ -26,6 +26,9 @@ const Header = (props) => {
         height: "60px ",
         backgroundColor: "var(--main-bg-color)",
         color: "white",
+        position:"fixed",
+        width:"102%",
+        zIndex:"10"
       }}
       className=" row justify-content-between align-content-center align-items-center "
       onMouseLeave={() => setShowDropDown(false)}
