@@ -46,7 +46,7 @@ const Sales = (props) => {
   },[])
   const salesTable = () => {
     const colDefs = [
-      { headerName: "Product Name", field: "name", flex: 1,cellStyle: { color: "var(--main-bg-color)", cursor: "pointer" }, },
+      { headerName: "Product Name", field: "name", flex: 1 },
       { headerName: "Brand", field: "brand", flex: 1 },
       { headerName: "Category", field: "category", flex: 1 },
       { headerName: "MRP", field: "mrp", flex: 1 },
