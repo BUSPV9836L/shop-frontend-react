@@ -234,7 +234,7 @@ const Invoice = () => {
           className=" btn "
           disabled={!product.name || !product.quantity || !product.price}
         >
-          Save
+          Create Sale
         </button>
         <button onClick={handelAddNew} className=" btn">
           Add New

@@ -86,7 +86,6 @@ const ApexChart = () => {
   const generteDataAsRequired = (inputData) => {
     const aggregatedData = {};
 
-    // Iterate through the input data
     inputData.forEach((entry) => {
       const month = entry.month;
       const monthData = entry.data;
@@ -106,7 +105,6 @@ const ApexChart = () => {
       });
     });
 
-    // Convert aggregatedData into the desired format
     const result = Object.keys(aggregatedData).map((name) => ({
       name,
       data: aggregatedData[name],
