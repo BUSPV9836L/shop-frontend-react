@@ -1,0 +1,57 @@
+@import "../src/colors.css";
+body{
+  overflow-x: hidden;
+}
+.login-left{
+  background-color: var(--main-bg-color) ;
+}
+.heading-text{
+  color: var(--main-bg-color) ;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+*{
+  font-size: 12px;
+}
+.custom-ag-theme .ag-header {
+  background-color: var(--main-bg-color);
+}
+.custom-ag-theme .ag-root-wrapper {
+  border-radius: 0;
+  font-size: 12px;
+  height: fit-content;
+}
+.ag-header-cell-text{
+  color: white !important;
+}
+.card {
+  border: 1px solid #ccc; 
+  border-radius: 8px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  padding: 20px; 
+  background-color: #fff; 
+  width: 99%;
+}
+.btn{
+  background-color: var(--main-bg-color);
+  color: white;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+.btn:hover{
+  background-color: var(--main-bg-color);
+  color: white;
+  opacity: 90%;
+}
+.modal {
+  --bs-modal-width: 70%;
+}
+.modal-header{
+  display: flex;
+  justify-content: space-between;
+}
+.close{
+  background-color: white;
+  border: 0;
+  padding: 0 20px;
+}
