@@ -2,16 +2,19 @@ import { Outlet } from "react-router";
 import Header from "../Header";
 import SideBar from "../SideBar";
 
-const Layout = () => {
+const Layout = (props) => {
+  const setLogging=(value)=>{
+    props.setLogging(value)
+  }
   return (
     <div>
-      <Header />
+      <Header setLogging={setLogging}/>
       <div className=" row">
         <div style={{width:"20%"}}>
           <SideBar />
         </div>
         <div style={{width:"80%", marginTop:"10px"}}>
-          <Outlet />
+          <Outlet/>
         </div>
       </div>
     </div>
