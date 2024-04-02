@@ -15,7 +15,9 @@ import Invoice from "../src/containers/Invoice";
 import Stocks from "./containers/Stocks";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(sessionStorage.getItem("accessToken")?true:false);
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    sessionStorage.getItem("accessToken") ? true : false
+  );
 
   const setLogging = (flag) => {
     setIsLoggedIn(flag);
@@ -32,7 +34,7 @@ function App() {
       : [
           {
             path: "/",
-            element: <Layout />,
+            element: <Layout setLogging={setLogging} />,
             children: [
               {
                 path: "/" + String.Dashboard,
@@ -70,11 +72,7 @@ function App() {
   return (
     <div className="App">
       <RouterProvider router={router}>
-        {!isLoggedIn ? (
-          <Login setLogging={setLogging} />
-        ) : (
-          <Layout />
-        )}
+        <Layout />
       </RouterProvider>
     </div>
   );
