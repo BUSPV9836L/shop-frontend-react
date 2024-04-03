@@ -117,6 +117,7 @@ const Purchase = () => {
     }
   };
   const updatePurchase = async () => {
+    console.log(product)
     setIsSaveing(true);
     try {
       const token = sessionStorage.getItem("accessToken");
@@ -237,16 +238,6 @@ const Purchase = () => {
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
     setIsSaveing(false);
-    setProduct([
-      {
-        id: 0,
-        name: "",
-        brand: "",
-        category: "",
-        price: "",
-        quantity_available: "",
-      },
-    ]);
   };
 
   const addIteamInPurchasePopUp = () => {
