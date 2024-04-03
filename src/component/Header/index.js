@@ -37,7 +37,7 @@ const Header = (props) => {
         <h5 style={{fontSize:"19px", fontWeight:"900"}}>SALES MANAGEMENT</h5>
       </div>
       <div className="col-2">
-        <div style={{width:"100%", paddingRight:"20px"}}  className=" row justify-content-end ">
+        <div style={{width:"100%", paddingRight:"45px"}}  className=" row justify-content-end ">
           <svg
           style={{width:"fit-content"}}
             onMouseEnter={() => setShowDropDown(true)}
