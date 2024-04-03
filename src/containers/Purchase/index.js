@@ -100,6 +100,7 @@ const Purchase = () => {
     }
   };
   const updatePurchase = async () => {
+    setIsSaveing(true)
     try {
       const token = sessionStorage.getItem("accessToken");
       const response = await fetch(`${String.BASE_URL}/purchases`, {
