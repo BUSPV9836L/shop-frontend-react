@@ -67,7 +67,7 @@ const Dashboard = () => {
             redirect: "/Purchase",
           },
           {
-            title: "Top Stock",
+            title: "Total Stock",
             count: data.totalstock?.length,
             color: "red",
             redirect: "/Stocks",

@@ -3,6 +3,8 @@ import String from "../../string";
 
 const Invoice = () => {
   const [stockOption, setStockOption] = useState([]);
+  const [isCreatingSale, setIsCreatingSale] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [product, setProduct] = useState({
     name: "",
     brand: "",
@@ -14,6 +16,7 @@ const Invoice = () => {
     mrp: "",
   });
   const getAllStocks = async () => {
+    setIsLoading(true);
     try {
       const token = sessionStorage.getItem("accessToken");
       const response = await fetch(`${String.BASE_URL}/stocks`, {
@@ -28,10 +31,14 @@ const Invoice = () => {
         setStockOption(data);
       }
     } catch (error) {
-      console.log(error);
+      alert("Server Error!");
+    } finally {
+      setIsLoading(false);
     }
   };
   const createNewInvoice = async () => {
+    setIsLoading(true);
+    setIsCreatingSale(true);
     try {
       const token = sessionStorage.getItem("accessToken");
       const response = await fetch(`${String.BASE_URL}/sales`, {
@@ -65,7 +72,10 @@ const Invoice = () => {
         });
       }
     } catch (error) {
-      console.log(error);
+      alert("Server Error!");
+    } finally {
+      setIsLoading(false);
+      setIsCreatingSale(false);
     }
   };
   useEffect(() => {
@@ -127,7 +137,9 @@ const Invoice = () => {
             >
               <option value={0}>select</option>
               {stockOption?.map((e) => (
-                <option value={e?.name + "," + e?.brand}>{e?.name+", "+e?.brand}</option>
+                <option value={e?.name + "," + e?.brand}>
+                  {e?.name + ", " + e?.brand}
+                </option>
               ))}
             </select>
           </div>
@@ -160,6 +172,20 @@ const Invoice = () => {
           <div class="form-group col-md-3">
             <label for="price" class="form-label">
               MRP
+            </label>
+            <input
+              disabled
+              onChange={(e) => handelChange(e)}
+              type="text"
+              name="price"
+              value={product?.price}
+              id="price"
+              class="form-control"
+            />
+          </div>
+          <div class="form-group col-md-3 mt-3">
+            <label for="price" class="form-label">
+              Sale Rate
             </label>
             <input
               onChange={(e) => handelChange(e)}
@@ -227,12 +253,22 @@ const Invoice = () => {
   return (
     <div>
       <h4 className="heading-text mb-3">Invoice</h4>
+      {isLoading && (
+        <div className="loader-container">
+          <div className="loader"></div>
+        </div>
+      )}
       <div style={{ marginRight: "20px" }} className=" mb-3 text-end">
         <button
           onClick={createNewInvoice}
           style={{ marginRight: "20px" }}
           className=" btn "
-          disabled={!product.name || !product.quantity || !product.price}
+          disabled={
+            !product.name ||
+            !product.quantity ||
+            !product.price ||
+            isCreatingSale
+          }
         >
           Create Sale
         </button>

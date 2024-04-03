@@ -21,9 +21,12 @@ const Purchase = () => {
   });
   const [gridApi, setGridApi] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isSaving,setIsSaveing]=useState(false);
 
   const getAllPurchase = async () => {
     try {
+      setIsSaveing(true)
+      setLoading(true)
       const token = sessionStorage.getItem("accessToken");
       const url = new URL(`${String.BASE_URL}/purchases`);
       url.searchParams.append(
@@ -52,10 +55,13 @@ const Purchase = () => {
     } catch (error) {
       alert("Server Error!");
     } finally {
+      setIsModalOpen(false)
+      setIsSaveing(false)
       setLoading(false);
     }
   };
   const createPurchase = async () => {
+    setIsSaveing(true)
     try {
       const token = sessionStorage.getItem("accessToken");
       const response = await fetch(`${String.BASE_URL}/purchases`, {
@@ -87,6 +93,10 @@ const Purchase = () => {
       }
     } catch (error) {
       console.log(error);
+    }finally{
+      setIsModalOpen(false)
+      setIsSaveing(false)
+      setIsModalOpen(false)
     }
   };
   const updatePurchase = async () => {
@@ -115,6 +125,8 @@ const Purchase = () => {
       }
     } catch (error) {
       console.log(error);
+    }finally{
+      setIsModalOpen(false)
     }
   };
   useEffect(() => {
@@ -217,6 +229,7 @@ const Purchase = () => {
                 !product?.price ||
                 !product?.quantity_available ||
                 !product?.id
+                ||isSaving
               }
             >
               Update
@@ -232,6 +245,7 @@ const Purchase = () => {
                 !product?.price ||
                 !product?.quantity_available ||
                 !isAddNewClicked
+                ||isSaving
               }
             >
               Save

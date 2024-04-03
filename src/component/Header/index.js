@@ -28,17 +28,18 @@ const Header = (props) => {
         color: "white",
         position:"fixed",
         width:"102%",
-        zIndex:"10"
+        zIndex:"10",
       }}
       className=" row justify-content-between align-content-center align-items-center "
       onMouseLeave={() => setShowDropDown(false)}
     >
       <div style={{ marginLeft: "20px" }} className=" col-3">
-        <h5>SALES MANAGEMENT</h5>
+        <h5 style={{fontSize:"19px", fontWeight:"900"}}>SALES MANAGEMENT</h5>
       </div>
       <div className="col-2">
-        <div className=" row justify-content-center ">
+        <div style={{width:"100%", paddingRight:"20px"}}  className=" row justify-content-end ">
           <svg
+          style={{width:"fit-content"}}
             onMouseEnter={() => setShowDropDown(true)}
             xmlns="http://www.w3.org/2000/svg"
             width="30"
