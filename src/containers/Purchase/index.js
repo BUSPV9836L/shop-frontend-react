@@ -297,7 +297,17 @@ const Purchase = () => {
                 MRP
               </label>
               <input
-                onChange={(e) => handelChange(e)}
+                onChange={(e) => {
+                  let number = e.target.value;
+                  if (isNaN(number) || number < 0) {
+                    return;
+                  } else if (/^0/.test(number)) {
+                    number = number.replace(/^0/, "");
+                  }
+                   else {
+                    handelChange(e);
+                  }
+                }}
                 type="text"
                 name="price"
                 value={product?.price}
@@ -307,10 +317,20 @@ const Purchase = () => {
             </div>
             <div class="form-group col-md-3 mt-3">
               <label for="quantity_available" class="form-label">
-                Avilable Quantity
+                Purchase Quantity
               </label>
               <input
-                onChange={(e) => handelChange(e)}
+                onChange={(e) => {
+                  let number = e.target.value;
+                  if (isNaN(number) || number < 0 || number % 1 !== 0) {
+                    return;
+                  } else if (/^0/.test(number)) {
+                    number = number.replace(/^0/, "");
+                  }
+                   else {
+                    handelChange(e);
+                  }
+                }}
                 type="text"
                 value={product?.quantity_available}
                 name="quantity_available"

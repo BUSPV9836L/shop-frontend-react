@@ -178,7 +178,7 @@ const Invoice = () => {
               onChange={(e) => handelChange(e)}
               type="text"
               name="price"
-              value={product?.price}
+              value={product?.mrp}
               id="price"
               class="form-control"
             />
@@ -188,7 +188,17 @@ const Invoice = () => {
               Sale Rate
             </label>
             <input
-              onChange={(e) => handelChange(e)}
+              onChange={(e) => {
+                let number = e.target.value;
+                if (isNaN(number) || number < 0) {
+                  return;
+                } else if (/^0/.test(number)) {
+                  number = number.replace(/^0/, "");
+                }
+                 else {
+                  handelChange(e);
+                }
+              }}
               type="text"
               name="price"
               value={product?.price}
@@ -219,7 +229,20 @@ const Invoice = () => {
               name="quantity"
               id="quantity"
               class="form-control"
-              onChange={(e) => handelChange(e)}
+              onChange={(e) => {
+                let number = e.target.value;
+                if (isNaN(number) || number < 0 || number % 1 !== 0) {
+                  return;
+                } else if (/^0/.test(number)) {
+                  number = number.replace(/^0/, "");
+                }else if(number>product?.quantity_available){
+                  alert("Quantity cannot be greater than avilable quantity!");
+                  return
+                }
+                 else {
+                  handelChange(e);
+                }
+              }}
             />
           </div>
           <div class="form-group col-md-3 mt-3">
