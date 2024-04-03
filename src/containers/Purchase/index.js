@@ -7,26 +7,33 @@ import { useLocation } from "react-router";
 import moment from "moment";
 
 const Purchase = () => {
+  const [product, setProduct] = useState([
+    {
+      id: 0,
+      name: "",
+      brand: "",
+      category: "",
+      price: "",
+      quantity_available: "",
+    },
+  ]);
   const [rowData, setRowData] = useState([]);
+
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddNewClicked, setIsAddNewClicked] = useState(false);
   const [popupTitle, setPopUpTitle] = useState("");
-  const [product, setProduct] = useState({
-    name: "",
-    brand: "",
-    category: "",
-    price: "",
-    quantity_available: "",
-  });
+  const [idFromValid, setIsFromValid] = useState(false);
+
   const [gridApi, setGridApi] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isSaving,setIsSaveing]=useState(false);
+  const [isSaving, setIsSaveing] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
 
   const getAllPurchase = async () => {
     try {
-      setIsSaveing(true)
-      setLoading(true)
+      setIsSaveing(true);
+      setLoading(true);
       const token = sessionStorage.getItem("accessToken");
       const url = new URL(`${String.BASE_URL}/purchases`);
       url.searchParams.append(
@@ -51,17 +58,28 @@ const Purchase = () => {
       const data = await response.json();
       if (!data?.stackTrace) {
         setRowData(data);
+      }else{
+        alert(data.message)
       }
     } catch (error) {
       alert("Server Error!");
     } finally {
-      setIsModalOpen(false)
-      setIsSaveing(false)
+      setIsModalOpen(false);
+      setIsSaveing(false);
       setLoading(false);
     }
   };
   const createPurchase = async () => {
-    setIsSaveing(true)
+    let json = product.map((e) => {
+      return {
+        name: e.name,
+        brand: e.brand,
+        category: e.category,
+        price: e.price,
+        quantity_available: e.quantity_available,
+      };
+    });
+    setIsSaveing(true);
     try {
       const token = sessionStorage.getItem("accessToken");
       const response = await fetch(`${String.BASE_URL}/purchases`, {
@@ -70,37 +88,36 @@ const Purchase = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          name: product?.name,
-          brand: product?.brand,
-          category: product?.category,
-          price: product?.price,
-          quantity_available: product?.quantity_available,
-        }),
+        body: JSON.stringify(json),
       });
       const data = await response.json();
       if (!data?.stackTrace) {
-        setProduct({
-          id: "",
+        alert("Record Saved Succesfully!");
+      }else{
+        alert(data.message)
+      }
+    } catch (error) {
+      alert("Server Error");
+    } finally {
+      setIsModalOpen(false);
+      setIsSaveing(false);
+      setIsModalOpen(false);
+      setProduct([
+        {
+          id: 0,
           name: "",
           brand: "",
           category: "",
           price: "",
           quantity_available: "",
-        });
-        getAllPurchase();
-        alert("Record Saved Succesfully!");
-      }
-    } catch (error) {
-      console.log(error);
-    }finally{
-      setIsModalOpen(false)
-      setIsSaveing(false)
-      setIsModalOpen(false)
+        },
+      ]);
+      setIsAddNewClicked(false);
+      getAllPurchase();
     }
   };
   const updatePurchase = async () => {
-    setIsSaveing(true)
+    setIsSaveing(true);
     try {
       const token = sessionStorage.getItem("accessToken");
       const response = await fetch(`${String.BASE_URL}/purchases`, {
@@ -113,21 +130,25 @@ const Purchase = () => {
       });
       const data = await response.json();
       if (!data?.stackTrace) {
-        setProduct({
-          id: "",
-          name: "",
-          brand: "",
-          category: "",
-          price: "",
-          quantity_available: "",
-        });
+        setProduct([
+          {
+            id: 0,
+            name: "",
+            brand: "",
+            category: "",
+            price: "",
+            quantity_available: "",
+          },
+        ]);
         getAllPurchase();
         alert("Record Updated Succesfully!");
+      }else{
+        alert(data.message)
       }
     } catch (error) {
       console.log(error);
-    }finally{
-      setIsModalOpen(false)
+    } finally {
+      setIsModalOpen(false);
     }
   };
   useEffect(() => {
@@ -191,16 +212,20 @@ const Purchase = () => {
           onCellClicked={(event) => {
             if (event.colDef.headerName === "Product Name") {
               setProduct(() => {
-                return {
-                  name: event?.data?.name,
-                  brand: event?.data?.brand,
-                  category: event?.data?.category,
-                  price: event?.data?.price,
-                  quantity_available: event.data?.quantity_available,
-                  id: event?.data?._id,
-                };
+                return [
+                  {
+                    name: event?.data?.name,
+                    brand: event?.data?.brand,
+                    category: event?.data?.category,
+                    price: event?.data?.price,
+                    quantity_available: event.data?.quantity_available,
+                    id: event?.data?._id,
+                    isControldisabled: true,
+                  },
+                ];
               });
-              setIsAddNewClicked(false)
+              setIsAddNewClicked(false);
+              setIsUpdate(true);
               setPopUpTitle("Update Purchase");
               toggleModal();
             }
@@ -211,6 +236,17 @@ const Purchase = () => {
   };
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
+    setIsSaveing(false);
+    setProduct([
+      {
+        id: 0,
+        name: "",
+        brand: "",
+        category: "",
+        price: "",
+        quantity_available: "",
+      },
+    ]);
   };
 
   const addIteamInPurchasePopUp = () => {
@@ -223,15 +259,7 @@ const Purchase = () => {
               style={{ marginRight: "20px" }}
               className=" btn "
               onClick={updatePurchase}
-              disabled={
-                !product?.name ||
-                !product?.brand ||
-                !product?.category ||
-                !product?.price ||
-                !product?.quantity_available ||
-                !product?.id
-                ||isSaving
-              }
+              disabled={!isUpdate || isSaving}
             >
               Update
             </button>
@@ -239,116 +267,187 @@ const Purchase = () => {
               style={{ marginRight: "20px" }}
               className=" btn "
               onClick={createPurchase}
-              disabled={
-                !product?.name ||
-                !product?.brand ||
-                !product?.category ||
-                !product?.price ||
-                !product?.quantity_available ||
-                !isAddNewClicked
-                ||isSaving
-              }
+              disabled={!idFromValid || !isAddNewClicked || isSaving}
             >
               Save
             </button>
           </div>
-          <form className=" row ">
-            <div class="form-group col-md-3">
-              <label for="name" class="form-label">
-                Product Name
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={product?.name}
-                id="name"
-                class="form-control"
-                onChange={(e) => handelChange(e)}
-              />
-            </div>
-            <div class="form-group col-md-3">
-              <label for="brand" class="form-label">
-                Brand
-              </label>
-              <input
-                onChange={(e) => handelChange(e)}
-                type="text"
-                name="brand"
-                value={product?.brand}
-                id="brand"
-                class="form-control"
-              />
-            </div>
-            <div class="form-group col-md-3">
-              <label for="category" class="form-label">
-                Category
-              </label>
-              <input
-                onChange={(e) => handelChange(e)}
-                type="text"
-                name="category"
-                value={product?.category}
-                id="category"
-                class="form-control"
-              />
-            </div>
-            <div class="form-group col-md-3">
-              <label for="price" class="form-label">
-                MRP
-              </label>
-              <input
-                onChange={(e) => {
-                  let number = e.target.value;
-                  if (isNaN(number) || number < 0) {
-                    return;
-                  } else if (/^0/.test(number)) {
-                    number = number.replace(/^0/, "");
-                  }
-                   else {
-                    handelChange(e);
-                  }
-                }}
-                type="text"
-                name="price"
-                value={product?.price}
-                id="price"
-                class="form-control"
-              />
-            </div>
-            <div class="form-group col-md-3 mt-3">
-              <label for="quantity_available" class="form-label">
-                Purchase Quantity
-              </label>
-              <input
-                onChange={(e) => {
-                  let number = e.target.value;
-                  if (isNaN(number) || number < 0 || number % 1 !== 0) {
-                    return;
-                  } else if (/^0/.test(number)) {
-                    number = number.replace(/^0/, "");
-                  }
-                   else {
-                    handelChange(e);
-                  }
-                }}
-                type="text"
-                value={product?.quantity_available}
-                name="quantity_available"
-                id="quantity_available"
-                class="form-control"
-              />
-            </div>
-          </form>
+          <table className=" table ">
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">No.</th>
+                <th scope="col">Product Name</th>
+                <th scope="col">Brand</th>
+                <th scope="col">Category</th>
+                <th scope="col">MRP</th>
+                <th scope="col">Quantity</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {product?.map((event, index) => (
+                <tr key={event?.id}>
+                  <td>
+                    <span
+                      onClick={() => {
+                        if (!event.isControldisabled) {
+                          handelAddNew();
+                        }
+                      }}
+                      style={{
+                        fontSize: "20px",
+                        fontWeight: "bolder",
+                        cursor: !event.isControldisabled ? "pointer" : "",
+                      }}
+                      aria-hidden="true"
+                    >
+                      &#43;
+                    </span>
+                  </td>
+                  <td>{index + 1}</td>
+                  <td>
+                    <input
+                      type="text"
+                      name="name"
+                      value={product && product[index]?.name}
+                      id="name"
+                      className="form-control"
+                      onChange={(e) => handelChange(e, event?.id)}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      name="brand"
+                      value={product && product[index]?.brand}
+                      onChange={(e) => handelChange(e, event?.id)}
+                      id="brand"
+                      className="form-control"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      name="category"
+                      value={product && product[index]?.category}
+                      onChange={(e) => handelChange(e, event?.id)}
+                      id="category"
+                      className="form-control"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      onChange={(e) => {
+                        let number = e.target.value;
+                        if (isNaN(number) || number < 0) {
+                          return;
+                        } else if (/^0/.test(number)) {
+                          number = number.replace(/^0/, "");
+                        } else {
+                          handelChange(e, event?.id);
+                        }
+                      }}
+                      type="text"
+                      name="price"
+                      value={product && product[index]?.price}
+                      id="price"
+                      className="form-control"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      value={product && product[index]?.quantity_available}
+                      name="quantity_available"
+                      id="quantity_available"
+                      className="form-control"
+                      onChange={(e) => {
+                        let number = e.target.value;
+                        if (isNaN(number) || number < 0 || number % 1 !== 0) {
+                          return;
+                        } else {
+                          handelChange(e, event?.id);
+                        }
+                      }}
+                    />
+                  </td>
+                  <td>
+                    <span
+                      onClick={() => {
+                        if (!event.isControldisabled) {
+                          handelDelete(event?.id);
+                        }
+                      }}
+                      style={{
+                        fontSize: "20px",
+                        fontWeight: "bolder",
+                        cursor: !event.isControldisabled ? "pointer" : "",
+                      }}
+                      aria-hidden="true"
+                    >
+                      &times;
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       );
     };
-    const handelChange = (e) => {
-      const { name, value } = e.target;
+    const handelAddNew = () => {
+      setIsFromValid(false);
+      const insertNew = {
+        id: Math.random() * 100,
+        name: "",
+        brand: "",
+        category: "",
+        price: "",
+        quantity_available: "",
+        quantity: "",
+        total_price: "",
+      };
       setProduct((prev) => {
-        return {
-          ...prev,
-          [name]: value,
-        };
+        return [...prev, insertNew];
+      });
+    };
+    const handelDelete = (id) => {
+      if (product.length == 1) return;
+      let afterDeletProduct = product?.filter((e) => e?.id !== id);
+      setProduct((prev) => {
+        return afterDeletProduct;
+      });
+    };
+    const handelChange = (e, id) => {
+      const { name, value } = e.target;
+      let res = product.map((e) => {
+        if (e?.id == id) {
+          return {
+            ...e,
+            [name]: value,
+          };
+        } else {
+          return e;
+        }
+      });
+      checkIsFormValid(name, value);
+      setProduct(res);
+    };
+    const checkIsFormValid = (name, value) => {
+      console.log(product);
+      product?.map((e) => {
+        if (
+          (name == "name" ? value : e.name) &&
+          (name == "category" ? value : e.category) &&
+          (name == "brand" ? value : e.brand) &&
+          (name == "price" ? value : e.price) &&
+          (name == "quantity_available" ? value : e.quantity_available)
+        ) {
+          setIsFromValid(true);
+        } else {
+          setIsFromValid(false);
+        }
       });
     };
     return (
@@ -369,7 +468,10 @@ const Purchase = () => {
               <button
                 type="button"
                 className="close"
-                onClick={toggleModal}
+                onClick={() => {
+                  setIsAddNewClicked(false);
+                  toggleModal();
+                }}
                 aria-label="Close"
               >
                 <span
@@ -394,16 +496,20 @@ const Purchase = () => {
         <button
           className="btn"
           onClick={() => {
+            setIsUpdate(false);
+            setIsFromValid(false);
             setIsAddNewClicked(!isAddNewClicked);
             setPopUpTitle("Create Purchase");
-            setProduct({
-              id: "",
-              name: "",
-              brand: "",
-              category: "",
-              price: "",
-              quantity_available: "",
-            });
+            setProduct([
+              {
+                id: 0,
+                name: "",
+                brand: "",
+                category: "",
+                price: "",
+                quantity_available: "",
+              },
+            ]);
             toggleModal();
           }}
         >

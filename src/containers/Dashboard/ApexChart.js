@@ -4,65 +4,66 @@ import String from "../../string";
 
 const ApexChart = () => {
   const [chartData, setChartData] = useState({
-    series: [
-    ],
+    series: [],
     options: {},
   });
-  const handeSetChart=(series,option)=>{
-    console.log(series,option)
-     setChartData({
-        series:series,
-        options:{
-          chart: {
-            type: 'bar',
-            height: 350,
-            stacked: true,
-            toolbar: {
-              show: true
-            },
-            zoom: {
-              enabled: true
-            }
+  const handeSetChart = (series, option) => {
+    console.log(series, option);
+    setChartData({
+      series: series,
+      options: {
+        chart: {
+          type: "bar",
+          height: 350,
+          stacked: true,
+          toolbar: {
+            show: true,
           },
-          responsive: [{
+          zoom: {
+            enabled: true,
+          },
+        },
+        responsive: [
+          {
             breakpoint: 480,
             options: {
               legend: {
-                position: 'bottom',
+                position: "bottom",
                 offsetX: -10,
-                offsetY: 0
-              }
-            }
-          }],
-          plotOptions: {
-            bar: {
-              horizontal: false,
-              borderRadius: 0,
-              dataLabels: {
-                total: {
-                  enabled: true,
-                  style: {
-                    fontSize: '13px',
-                    fontWeight: 900
-                  }
-                }
-              }
+                offsetY: 0,
+              },
             },
           },
-          xaxis: {
-            type: 'datetime',
-            categories: option,
+        ],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            borderRadius: 0,
+            dataLabels: {
+              total: {
+                enabled: true,
+                style: {
+                  fontSize: "13px",
+                  fontWeight: 900,
+                },
+              },
+            },
           },
-          legend: {
-            position: 'right',
-            offsetY: 40
-          },
-          fill: {
-            opacity: 1
-          }
-        }
-     })
-  }
+        },
+        xaxis: {
+          type: "datetime",
+          categories: option,
+        },
+        legend: {
+          position: "right",
+          offsetY: 40,
+        },
+        fill: {
+          opacity: 1,
+        },
+      },
+    });
+  };
   const getChartData = async () => {
     try {
       const token = sessionStorage.getItem("accessToken");
@@ -75,9 +76,11 @@ const ApexChart = () => {
       });
       const data = await response.json();
       if (!data?.stackTrace) {
-        let series=generteDataAsRequired(data);
-        let option=data.map(e=>e?.month)
-        handeSetChart(series,option)
+        let series = generteDataAsRequired(data);
+        let option = data.map((e) => e?.month);
+        handeSetChart(series, option);
+      } else {
+        alert(data.message);
       }
     } catch (error) {
       console.log(error);

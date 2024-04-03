@@ -24,6 +24,8 @@ const Stocks = () => {
       const data = await response.json();
       if (!data?.stackTrace) {
         setRowData(data);
+      }else{
+        alert(data.message)
       }
     } catch (error) {
       alert("Server Error");

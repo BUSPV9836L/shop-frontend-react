@@ -75,6 +75,8 @@ const Dashboard = () => {
         ];
         setDashboardJson(json);
         setDashboardData(data);
+      }else{
+        alert(data.message)
       }
     } catch (error) {
       setDashboardJson([
@@ -123,6 +125,8 @@ const Dashboard = () => {
       const data = await response.json();
       if (!data?.stackTrace) {
         setProfit(data?.profit);
+      }else{
+        alert(data.message)
       }
     } catch (error) {
       console.log(error);

@@ -5,16 +5,20 @@ const Invoice = () => {
   const [stockOption, setStockOption] = useState([]);
   const [isCreatingSale, setIsCreatingSale] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [product, setProduct] = useState({
-    name: "",
-    brand: "",
-    category: "",
-    price: "",
-    quantity_available: "",
-    quantity: "",
-    total_price: "",
-    mrp: "",
-  });
+  const [idFromValid, setIsFromValid] = useState(false);
+  const [product, setProduct] = useState([
+    {
+      id: 0,
+      name: "",
+      brand: "",
+      category: "",
+      price: "",
+      quantity_available: "",
+      quantity: "",
+      total_price: "",
+      mrp: "",
+    },
+  ]);
   const getAllStocks = async () => {
     setIsLoading(true);
     try {
@@ -29,6 +33,8 @@ const Invoice = () => {
       const data = await response.json();
       if (!data?.stackTrace) {
         setStockOption(data);
+      }else{
+        alert(data.message)
       }
     } catch (error) {
       alert("Server Error!");
@@ -39,6 +45,12 @@ const Invoice = () => {
   const createNewInvoice = async () => {
     setIsLoading(true);
     setIsCreatingSale(true);
+    let json = product.map((e) => {
+      return {
+        ...e,
+        name: e?.name.split(",")[0],
+      };
+    });
     try {
       const token = sessionStorage.getItem("accessToken");
       const response = await fetch(`${String.BASE_URL}/sales`, {
@@ -47,29 +59,25 @@ const Invoice = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          name: product?.name.split(",")[0],
-          brand: product?.brand,
-          category: product?.category,
-          price: product?.price,
-          quantity: product?.quantity,
-          total_price: product?.total_price,
-          mrp: product?.mrp,
-        }),
+        body: JSON.stringify(json),
       });
       const data = await response.json();
       if (!data?.stackTrace) {
         alert("Sale invoice created successfully!");
-        setProduct({
-          name: "",
-          brand: "",
-          category: "",
-          price: "",
-          quantity_available: "",
-          quantity: "",
-          total_price: "",
-          mrp: "",
-        });
+        setProduct([
+          {
+            name: "",
+            brand: "",
+            category: "",
+            price: "",
+            quantity_available: "",
+            quantity: "",
+            total_price: "",
+            mrp: "",
+          },
+        ]);
+      }else{
+        alert(data.message)
       }
     } catch (error) {
       alert("Server Error!");
@@ -81,11 +89,10 @@ const Invoice = () => {
   useEffect(() => {
     getAllStocks();
   }, []);
-  const handelChange = (e) => {
+  const handelChange = (e, id) => {
     const { name, value } = e.target;
 
     if (name === "name") {
-      console.log(value?.split(",")[0]);
       const selectProduct = stockOption?.filter((e) => {
         if (
           value?.split(",")[0] === e.name &&
@@ -94,176 +101,231 @@ const Invoice = () => {
           return e;
         }
       })[0];
-      setProduct(() => {
-        return {
-          name: value,
-          brand: selectProduct?.brand,
-          category: selectProduct?.category,
-          price: selectProduct?.price,
-          quantity_available: selectProduct?.quantity_available,
-          quantity: "",
-          total_price: "",
-          mrp: selectProduct?.price,
-        };
+      console.log(selectProduct);
+      let res = product.map((e) => {
+        console.log(e.id, id);
+        if (e?.id == id) {
+          return {
+            id: id,
+            name: value,
+            brand: selectProduct?.brand,
+            category: selectProduct?.category,
+            price: selectProduct?.price,
+            quantity_available: selectProduct?.quantity_available,
+            quantity: "",
+            total_price: "",
+            mrp: selectProduct?.price,
+          };
+        } else {
+          return e;
+        }
       });
+      setProduct(res);
     } else if (name == "quantity" || name == "price") {
-      setProduct((prev) => {
-        return {
-          ...prev,
-          [name]: value,
-          total_price:
-            ((name === "quantity" ? value : prev.quantity) || 0) *
-            ((name === "price" ? value : prev.price) || 0),
-        };
+      let res = product.map((e) => {
+        console.log(e.id, id);
+        if (e?.id == id) {
+          return {
+            ...e,
+            [name]: value,
+            total_price:
+              ((name === "quantity" ? value : e.quantity) || 0) *
+              ((name === "price" ? value : e.price) || 0),
+          };
+        } else {
+          return e;
+        }
       });
+      checkIsFormValid(name, value);
+      setProduct(res);
     }
   };
-
+  const checkIsFormValid = (name, value) => {
+    product?.map((e) => {
+      if (
+        (name == "price" ? value : e.price) &&
+        (name == "quantity" ? value : e.quantity)
+      ) {
+        setIsFromValid(true);
+      }else{
+        setIsFromValid(false);
+      }
+    });
+  };
   const createInvoice = () => {
     return (
-      <div className=" card ">
-        <form className=" row ">
-          <div class="form-group col-md-3">
-            <label for="name" class="form-label">
-              Product Name
-            </label>
-            <select
-              type="text"
-              name="name"
-              value={product?.name}
-              id="name"
-              class="form-control"
-              onChange={(e) => handelChange(e)}
-            >
-              <option value={0}>select</option>
-              {stockOption?.map((e) => (
-                <option value={e?.name + "," + e?.brand}>
-                  {e?.name + ", " + e?.brand}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div class="form-group col-md-3">
-            <label for="brand" class="form-label">
-              Brand
-            </label>
-            <input
-              disabled
-              type="text"
-              name="brand"
-              value={product?.brand}
-              id="brand"
-              class="form-control"
-            />
-          </div>
-          <div class="form-group col-md-3">
-            <label for="category" class="form-label">
-              Category
-            </label>
-            <input
-              disabled
-              type="text"
-              name="category"
-              value={product?.category}
-              id="category"
-              class="form-control"
-            />
-          </div>
-          <div class="form-group col-md-3">
-            <label for="price" class="form-label">
-              MRP
-            </label>
-            <input
-              disabled
-              onChange={(e) => handelChange(e)}
-              type="text"
-              name="price"
-              value={product?.mrp}
-              id="price"
-              class="form-control"
-            />
-          </div>
-          <div class="form-group col-md-3 mt-3">
-            <label for="price" class="form-label">
-              Sale Rate
-            </label>
-            <input
-              onChange={(e) => {
-                let number = e.target.value;
-                if (isNaN(number) || number < 0) {
-                  return;
-                } else if (/^0/.test(number)) {
-                  number = number.replace(/^0/, "");
-                }
-                 else {
-                  handelChange(e);
-                }
-              }}
-              type="text"
-              name="price"
-              value={product?.price}
-              id="price"
-              class="form-control"
-            />
-          </div>
-          <div class="form-group col-md-3 mt-3">
-            <label for="quantity_available" class="form-label">
-              Avilable Quantity
-            </label>
-            <input
-              disabled
-              type="text"
-              value={product?.quantity_available}
-              name="quantity_available"
-              id="quantity_available"
-              class="form-control"
-            />
-          </div>
-          <div class="form-group col-md-3 mt-3">
-            <label for="quantity" class="form-label">
-              Quantity
-            </label>
-            <input
-              type="text"
-              value={product?.quantity}
-              name="quantity"
-              id="quantity"
-              class="form-control"
-              onChange={(e) => {
-                let number = e.target.value;
-                if (isNaN(number) || number < 0 || number % 1 !== 0) {
-                  return;
-                } else if (/^0/.test(number)) {
-                  number = number.replace(/^0/, "");
-                }else if(number>product?.quantity_available){
-                  alert("Quantity cannot be greater than avilable quantity!");
-                  return
-                }
-                 else {
-                  handelChange(e);
-                }
-              }}
-            />
-          </div>
-          <div class="form-group col-md-3 mt-3">
-            <label for="total_price" class="form-label">
-              Total Price
-            </label>
-            <input
-              disabled
-              type="text"
-              value={product?.total_price}
-              name="total_price"
-              id="total_price"
-              class="form-control"
-            />
-          </div>
-        </form>
-      </div>
+      <table className="table">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">No.</th>
+            <th scope="col">Product Name</th>
+            <th scope="col">Brand</th>
+            <th scope="col">Category</th>
+            <th scope="col">MRP</th>
+            <th scope="col">Sale Rate</th>
+            <th scope="col">Available Quantity</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Total Price</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {product?.map((event, index) => (
+            <tr key={event?.id}>
+              <td>
+                <span
+                  onClick={handelAddNew}
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bolder",
+                    cursor: "pointer",
+                  }}
+                  aria-hidden="true"
+                >
+                  &#43;
+                </span>
+              </td>
+              <td>{index + 1}</td>
+              <td>
+                <select
+                  type="text"
+                  name="name"
+                  value={product && product[index]?.name}
+                  id="name"
+                  className="form-control"
+                  onChange={(e) => handelChange(e, event?.id)}
+                >
+                  <option value={0}>select</option>
+                  {stockOption?.map((e) => (
+                    <option key={e.id} value={e?.name + "," + e?.brand}>
+                      {e?.name + ", " + e?.brand}
+                    </option>
+                  ))}
+                </select>
+              </td>
+              <td>
+                <input
+                  disabled
+                  type="text"
+                  name="brand"
+                  value={product && product[index]?.brand}
+                  id="brand"
+                  className="form-control"
+                />
+              </td>
+              <td>
+                <input
+                  disabled
+                  type="text"
+                  name="category"
+                  value={product && product[index]?.category}
+                  id="category"
+                  className="form-control"
+                />
+              </td>
+              <td>
+                <input
+                  disabled
+                  onChange={(e) => handelChange(e, event?.id)}
+                  type="text"
+                  name="price"
+                  value={product && product[index]?.mrp}
+                  id="price"
+                  className="form-control"
+                />
+              </td>
+              <td>
+                <input
+                  onChange={(e) => {
+                    let number = e.target.value;
+                    if (isNaN(number) || number < 0) {
+                      return;
+                    } else if (/^0/.test(number)) {
+                      number = number.replace(/^0/, "");
+                    } else {
+                      handelChange(e, event?.id);
+                    }
+                  }}
+                  type="text"
+                  name="price"
+                  value={product && product[index]?.price}
+                  id="price"
+                  className="form-control"
+                />
+              </td>
+              <td>
+                <input
+                  disabled
+                  type="text"
+                  value={product && product[index]?.quantity_available}
+                  name="quantity_available"
+                  id="quantity_available"
+                  className="form-control"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  value={product && product[index]?.quantity}
+                  name="quantity"
+                  id="quantity"
+                  className="form-control"
+                  onChange={(e) => {
+                    let number = e.target.value;
+                    if (isNaN(number) || number < 0 || number % 1 !== 0) {
+                      return;
+                    } else if (
+                      number > (product && product[index]?.quantity_available)
+                    ) {
+                      alert(
+                        "Quantity cannot be greater than available quantity!"
+                      );
+                      return;
+                    } else {
+                      handelChange(e, event?.id);
+                    }
+                  }}
+                />
+              </td>
+              <td>
+                <input
+                  disabled
+                  type="text"
+                  value={product && product[index]?.total_price}
+                  name="total_price"
+                  id="total_price"
+                  className="form-control"
+                />
+              </td>
+              <td>
+                <span
+                  onClick={() => handelDelete(event?.id)}
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bolder",
+                    cursor: "pointer",
+                  }}
+                  aria-hidden="true"
+                >
+                  &times;
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     );
   };
+
   const handelAddNew = () => {
-    setProduct({
+    if(product.length==stockOption.length){
+      alert("Max row reaced!")
+      return
+    }
+    setIsFromValid(false);
+    const insertNew = {
+      id: Math.random() * 100,
       name: "",
       brand: "",
       category: "",
@@ -271,6 +333,16 @@ const Invoice = () => {
       quantity_available: "",
       quantity: "",
       total_price: "",
+    };
+    setProduct((prev) => {
+      return [...prev, insertNew];
+    });
+  };
+  const handelDelete = (id) => {
+    if (product.length == 1) return;
+    let afterDeletProduct = product?.filter((e) => e?.id !== id);
+    setProduct((prev) => {
+      return afterDeletProduct;
     });
   };
   return (
@@ -286,17 +358,9 @@ const Invoice = () => {
           onClick={createNewInvoice}
           style={{ marginRight: "20px" }}
           className=" btn "
-          disabled={
-            !product.name ||
-            !product.quantity ||
-            !product.price ||
-            isCreatingSale
-          }
+          disabled={!idFromValid}
         >
           Create Sale
-        </button>
-        <button onClick={handelAddNew} className=" btn">
-          Add New
         </button>
       </div>
       {createInvoice()}
