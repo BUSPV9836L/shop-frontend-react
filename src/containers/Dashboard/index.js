@@ -8,7 +8,7 @@ import ApexChart from "./ApexChart";
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState([]);
   const navigate = useNavigate();
-  const [dahboardjson, setDashboardJson] = useState([
+  const [dashboardJson, setDashboardJson] = useState([
     {
       title: "Total Sales",
       count: 0,
@@ -16,7 +16,7 @@ const Dashboard = () => {
       redirect: "/Sales",
     },
     {
-      title: "Total Purchae",
+      title: "Total Purchase",
       count: 0,
       color: "green",
       redirect: "/Purchase",
@@ -32,7 +32,10 @@ const Dashboard = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [profit, setProfit] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+
   const getDashboardData = async () => {
+    setIsLoading(true);
     try {
       const token = sessionStorage.getItem("accessToken");
       const url = new URL(`${String.BASE_URL}/dashboard`);
@@ -58,7 +61,7 @@ const Dashboard = () => {
             redirect: "/Sales",
           },
           {
-            title: "Total Purchae",
+            title: "Total Purchase",
             count: data.totalpurchase?.length,
             color: "green",
             redirect: "/Purchase",
@@ -74,10 +77,34 @@ const Dashboard = () => {
         setDashboardData(data);
       }
     } catch (error) {
-      console.log(error);
+      setDashboardJson([
+        {
+          title: "Total Sales",
+          count: 0,
+          color: "blue",
+          redirect: "/Sales",
+        },
+        {
+          title: "Total Purchase",
+          count: 0,
+          color: "green",
+          redirect: "/Purchase",
+        },
+        {
+          title: "Top Stock",
+          count: 0,
+          color: "red",
+          redirect: "/Stock",
+        },
+      ]);
+      alert("Server Error!");
+    } finally {
+      setIsLoading(false);
     }
   };
+
   const getProfit = async () => {
+    setIsLoading(true);
     try {
       const token = sessionStorage.getItem("accessToken");
       const url = new URL(`${String.BASE_URL}/sales/profit`);
@@ -99,12 +126,18 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
   useEffect(() => {
-    getDashboardData();
-    getProfit();
+    if (startDate && endDate) {
+      getDashboardData();
+      getProfit();
+    }
   }, [startDate, endDate]);
+
   const calculateDates = (timeRange) => {
     let day = 0;
     switch (timeRange) {
@@ -127,24 +160,28 @@ const Dashboard = () => {
     setStartDate(moment().subtract(day, "days").format("YYYY-MM-DD"));
     setEndDate(moment().format("YYYY-MM-DD"));
   };
+
   useEffect(() => {
     document.getElementsByName("apexcharts-bar-area").values = "";
   }, []);
-  const handleTimeRangeChange = async(e) => {
+
+  const handleTimeRangeChange = async (e) => {
     setTimeRange(e.target.value);
   };
-  useEffect(()=>{
+
+  useEffect(() => {
     calculateDates(timeRange);
-  },[timeRange])
+  }, [timeRange]);
+
   const showTimeRangeFilter = () => {
     return (
-      <div className=" row mb-3">
-        <div className=" from-group col-md-3">
+      <div className="row mb-3">
+        <div className="from-group col-md-3">
           <label>Time Range</label>
           <select
             value={timeRange}
             onChange={(e) => handleTimeRangeChange(e)}
-            className=" form-control "
+            className="form-control"
           >
             <option value="Today's">Today's</option>
             <option selected value="This Week">
@@ -154,23 +191,39 @@ const Dashboard = () => {
             <option value="Current Year">Current Year</option>
           </select>
         </div>
-        <div className=" from-group col-md-3">
+        <div className="from-group col-md-3">
           <label>Start Date</label>
-          <input value={startDate} type="date" className=" form-control " />
+          <input
+            value={startDate}
+            type="date"
+            className="form-control"
+            disabled
+          />
         </div>
-        <div className=" from-group col-md-3">
+        <div className="from-group col-md-3">
           <label>End Date</label>
-          <input value={endDate} type="date" className=" form-control " />
+          <input
+            disabled
+            value={endDate}
+            type="date"
+            className="form-control"
+          />
         </div>
       </div>
     );
   };
+
   return (
     <div>
-      <h4 className=" heading-text mb-3">Dashboard</h4>
+      <h4 className="heading-text mb-3">Dashboard</h4>
       {showTimeRangeFilter()}
-      <div className=" row mb-5">
-        {dahboardjson.map((e) => {
+      {isLoading && (
+        <div className="loader-container">
+          <div className="loader"></div>
+        </div>
+      )}
+      <div className="row mb-5">
+        {dashboardJson.map((e, index) => {
           const clallBack = () => {
             navigate(e.redirect, {
               state: { startDate: startDate, endDate: endDate },
@@ -178,6 +231,7 @@ const Dashboard = () => {
           };
           return (
             <Tiles
+              key={index}
               clickable={true}
               width={200}
               height={50}

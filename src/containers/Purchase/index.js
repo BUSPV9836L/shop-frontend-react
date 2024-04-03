@@ -19,6 +19,8 @@ const Purchase = () => {
     price: "",
     quantity_available: "",
   });
+  const [gridApi, setGridApi] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const getAllPurchase = async () => {
     try {
@@ -48,7 +50,9 @@ const Purchase = () => {
         setRowData(data);
       }
     } catch (error) {
-      console.log(error);
+      alert("Server Error!");
+    } finally {
+      setLoading(false);
     }
   };
   const createPurchase = async () => {
@@ -116,6 +120,20 @@ const Purchase = () => {
   useEffect(() => {
     getAllPurchase();
   }, []);
+
+  const onGridReady = (params) => {
+    setGridApi(params.api);
+  };
+
+  useEffect(() => {
+    if (gridApi) {
+      if (loading) {
+        gridApi.showLoadingOverlay();
+      } else {
+        gridApi.hideOverlay();
+      }
+    }
+  }, [loading, gridApi]);
   const PurchaseTable = () => {
     const colDefs = [
       {
@@ -153,6 +171,7 @@ const Purchase = () => {
           suppressCellSelection={true}
           rowSelection="multiple"
           pagination={true}
+          onGridReady={onGridReady}
           paginationPageSize={10}
           enableCellTextSelection={true}
           domLayout={"autoHeight"}

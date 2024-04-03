@@ -10,6 +10,8 @@ import { useLocation } from "react-router";
 const Sales = (props) => {
   const [rowData, setRowData] = useState([]);
   const location = useLocation();
+  const [gridApi, setGridApi] = useState(null);
+  const [loading, setLoading] = useState(true);
   const getAllSales = async () => {
     try {
       const token = sessionStorage.getItem("accessToken");
@@ -38,12 +40,27 @@ const Sales = (props) => {
         setRowData(data);
       }
     } catch (error) {
-      console.log(error);
+      alert("Server Error!")
+    } finally {
+      setLoading(false);
     }
   };
-  useEffect(()=>{
-    getAllSales()
-  },[])
+  useEffect(() => {
+    getAllSales();
+  }, []);
+  const onGridReady = (params) => {
+    setGridApi(params.api);
+  };
+
+  useEffect(() => {
+    if (gridApi) {
+      if (loading) {
+        gridApi.showLoadingOverlay();
+      } else {
+        gridApi.hideOverlay();
+      }
+    }
+  }, [loading, gridApi]);
   const salesTable = () => {
     const colDefs = [
       { headerName: "Product Name", field: "name", flex: 1 },
@@ -58,7 +75,6 @@ const Sales = (props) => {
         flex: 1,
       },
       { headerName: "Purcahse Date", field: "createdAt", flex: 1 },
-      
     ];
 
     return (
@@ -77,6 +93,7 @@ const Sales = (props) => {
           }}
           gridOptions={{ headerHeight: 30, rowHeight: 28 }}
           suppressCellSelection={true}
+          onGridReady={onGridReady}
           rowSelection="multiple"
           pagination={true}
           paginationPageSize={10}

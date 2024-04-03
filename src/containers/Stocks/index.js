@@ -8,6 +8,9 @@ import { useLocation } from "react-router";
 const Stocks = () => {
   const location = useLocation();
   const [rowData, setRowData] = useState([]);
+  const [gridApi, setGridApi] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const getAllStocks = async () => {
     try {
       const token = sessionStorage.getItem("accessToken");
@@ -23,13 +26,29 @@ const Stocks = () => {
         setRowData(data);
       }
     } catch (error) {
-      console.log(error);
+      alert("Server Error");
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     getAllStocks();
   }, []);
+
+  const onGridReady = (params) => {
+    setGridApi(params.api);
+  };
+
+  useEffect(() => {
+    if (gridApi) {
+      if (loading) {
+        gridApi.showLoadingOverlay();
+      } else {
+        gridApi.hideOverlay();
+      }
+    }
+  }, [loading, gridApi]);
 
   const stockTable = () => {
     const colDefs = [
@@ -61,7 +80,11 @@ const Stocks = () => {
             resizable: true,
             width: 100,
           }}
-          gridOptions={{ headerHeight: 30, rowHeight: 28 }}
+          gridOptions={{
+            headerHeight: 30,
+            rowHeight: 28,
+          }}
+          onGridReady={onGridReady}
           suppressCellSelection={true}
           rowSelection="multiple"
           pagination={true}
