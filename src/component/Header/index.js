@@ -51,7 +51,7 @@ const Header = (props) => {
         >
           
           <div style={{ width: "fit-content" }} className=" mt-2">Network Status: {<NetworkStatus />}</div>
-          <div className=" col-4">
+          <div className=" col-1">
           {showLogOut()}
             <svg
               style={{ width: "fit-content" }}
