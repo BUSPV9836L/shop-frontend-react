@@ -15,10 +15,10 @@ const Header = (props) => {
           Navigate("/");
         }}
         style={{
-          position:"absolute",
-          right:"5%",
-          top:"50%",
-          cursor:"pointer"
+          position: "absolute",
+          right: "5%",
+          top: "50%",
+          cursor: "pointer",
         }}
         class="dropdown-menu show px-4 py-3 mt-4"
       >
@@ -39,20 +39,18 @@ const Header = (props) => {
       className=" row justify-content-between align-content-center align-items-center "
       onMouseLeave={() => setShowDropDown(false)}
     >
-      <div style={{ marginLeft: "20px" }} className=" col-5">
-        <h5 style={{ fontSize: "19px", fontWeight: "900" }}>
+      <div className=" col-6">
+        <h5 style={{ fontSize: "19px", fontWeight: "900", marginLeft:"2%" }}>
           SALES MANAGEMENT
         </h5>
       </div>
-      <div className="col-2">
-        <div
-          style={{ width: "100%", paddingRight: "20px" }}
-          className=" row justify-content-between"
-        >
-          
-          <div style={{ width: "fit-content" }} className=" mt-2">Network Status: {<NetworkStatus />}</div>
-          <div style={{marginRight:"20px"}} className=" col-1">
-          {showLogOut()}
+      <div className="col-6">
+        <div className=" row justify-content-end">
+          <div style={{ width: "fit-content" }} className=" mt-2 col-3">
+            Network Status: {<NetworkStatus />}
+          </div>
+          <div style={{ marginRight: "20px" }} className=" col-1">
+            {showLogOut()}
             <svg
               style={{ width: "fit-content" }}
               onMouseEnter={() => setShowDropDown(true)}
@@ -68,7 +66,7 @@ const Header = (props) => {
                 fill-rule="evenodd"
                 d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"
               />
-            </svg> 
+            </svg>
           </div>
         </div>
       </div>
