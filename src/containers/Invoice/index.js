@@ -174,7 +174,7 @@ const Invoice = () => {
           {product?.map((event, index) => (
             <tr key={event?.id}>
               <td>
-                <span
+                {index === product.length - 1 &&<span
                   onClick={handelAddNew}
                   style={{
                     fontSize: "20px",
@@ -184,7 +184,7 @@ const Invoice = () => {
                   aria-hidden="true"
                 >
                   &#43;
-                </span>
+                </span>}
               </td>
               <td>{index + 1}</td>
               <td>

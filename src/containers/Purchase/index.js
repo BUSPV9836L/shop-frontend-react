@@ -280,7 +280,7 @@ const Purchase = () => {
               {product?.map((event, index) => (
                 <tr key={event?.id}>
                   <td>
-                    <span
+                    {index === product.length - 1 &&<span
                       onClick={() => {
                         if (!event.isControldisabled) {
                           handelAddNew();
@@ -294,7 +294,7 @@ const Purchase = () => {
                       aria-hidden="true"
                     >
                       &#43;
-                    </span>
+                    </span>}
                   </td>
                   <td>{index + 1}</td>
                   <td>
