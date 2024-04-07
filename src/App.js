@@ -13,6 +13,7 @@ import Purchase from "../src/containers/Purchase";
 import Sales from "../src/containers/Sales";
 import Invoice from "../src/containers/Invoice";
 import Stocks from "./containers/Stocks";
+import InvoiceReceipt from "./containers/Invoice/InvoiceReceipt";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -57,8 +58,8 @@ function App() {
                 element: <Stocks />,
               },
               {
-                path: "*",
-                element: <Navigate to={"/" + String.Dashboard} replace />,
+                path: "/" + String.InvoiceReceipt,
+                element: <InvoiceReceipt />,
               },
               {
                 path: "/",

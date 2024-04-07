@@ -5,7 +5,8 @@ const String={
     Purchase:"Purchase",
     Sales:"Sales",
     Invoice:"Invoice",
-    Stocks:"Stocks"
+    Stocks:"Stocks",
+    InvoiceReceipt:"InvoiceReceipt"
 }
 
 export default String;

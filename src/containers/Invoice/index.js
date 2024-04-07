@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import String from "../../string";
-
+import { useNavigate } from "react-router";
 const Invoice = () => {
   const [stockOption, setStockOption] = useState([]);
   const [isCreatingSale, setIsCreatingSale] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [idFromValid, setIsFromValid] = useState(false);
+  const navigate = useNavigate();
   const [product, setProduct] = useState([
     {
       id: 0,
@@ -33,8 +34,8 @@ const Invoice = () => {
       const data = await response.json();
       if (!data?.stackTrace) {
         setStockOption(data);
-      }else{
-        alert(data.message)
+      } else {
+        alert(data.message);
       }
     } catch (error) {
       alert("Server Error!");
@@ -63,21 +64,24 @@ const Invoice = () => {
       });
       const data = await response.json();
       if (!data?.stackTrace) {
-        alert("Sale invoice created successfully!");
-        setProduct([
-          {
-            name: "",
-            brand: "",
-            category: "",
-            price: "",
-            quantity_available: "",
-            quantity: "",
-            total_price: "",
-            mrp: "",
-          },
-        ]);
-      }else{
-        alert(data.message)
+        // alert("Sale invoice created successfully!");
+        navigate("/" + String.InvoiceReceipt, {
+          state: product,
+        });
+        // setProduct([
+        //   {
+        //     name: "",
+        //     brand: "",
+        //     category: "",
+        //     price: "",
+        //     quantity_available: "",
+        //     quantity: "",
+        //     total_price: "",
+        //     mrp: "",
+        //   },
+        // ]);
+      } else {
+        alert(data.message);
       }
     } catch (error) {
       alert("Server Error!");
@@ -147,7 +151,7 @@ const Invoice = () => {
         (name == "quantity" ? value : e.quantity)
       ) {
         setIsFromValid(true);
-      }else{
+      } else {
         setIsFromValid(false);
       }
     });
@@ -174,17 +178,19 @@ const Invoice = () => {
           {product?.map((event, index) => (
             <tr key={event?.id}>
               <td>
-                {index === product.length - 1 &&<span
-                  onClick={handelAddNew}
-                  style={{
-                    fontSize: "20px",
-                    fontWeight: "bolder",
-                    cursor: "pointer",
-                  }}
-                  aria-hidden="true"
-                >
-                  &#43;
-                </span>}
+                {index === product.length - 1 && (
+                  <span
+                    onClick={handelAddNew}
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: "bolder",
+                      cursor: "pointer",
+                    }}
+                    aria-hidden="true"
+                  >
+                    &#43;
+                  </span>
+                )}
               </td>
               <td>{index + 1}</td>
               <td>
@@ -319,9 +325,9 @@ const Invoice = () => {
   };
 
   const handelAddNew = () => {
-    if(product.length==stockOption.length){
-      alert("Max row reaced!")
-      return
+    if (product.length == stockOption.length) {
+      alert("Max row reaced!");
+      return;
     }
     setIsFromValid(false);
     const insertNew = {
