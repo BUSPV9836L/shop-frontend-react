@@ -101,8 +101,8 @@ const Login = (props) => {
         className="row justify-content-center  text-center  align-content-center "
       >
         <div className=" col-10">
-          <p style={{ fontSize: "16px" }}>
-            Sales Management <b>@DMS</b>
+          <p  >
+            <b style={{ fontSize: "18px", color:"gray" }}>Logging to Sales Management</b>
           </p>
           {isLoogedIn ? (
             <FaUnlock color="grey" size={30} />
